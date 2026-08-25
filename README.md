@@ -77,13 +77,35 @@ tests/             # 防泄漏 + shape + 出图
 - 标准化默认只在**训练集日频特征**上 fit 全局 scaler；消融可改为**按个股** train-only z-score
 - **不按时间随机打乱**。DataLoader 只打乱训练窗
 
-## 模型
+## 模型架构
 
 - 2 层 Encoder，`d_model=64`，4 heads，GELU，last-token pooling
 - `pretrain_task`：`stock_id` | `mask_recon` | `trend` / `trend_mlp`
 - 掩码预训练：随机遮 15% 时间步，用 mask token，MSE 重建被遮特征
 - 微调：冻结 encoder 只训涨跌头；linear probe 在 embedding 上用 Logistic Regression；full 解冻 encoder + MLP 头
 - 梯度裁剪 `max_norm=1.0`
+
+### 架构可视化 / Architecture Visualization
+
+> **[▶ 在线交互式架构图](https://claude.ai/code/artifact/c295786c-8057-44cc-9813-a69804f98e53)**
+
+一张交互式的单页可视化，展示 `StockTransformer` 的完整 forward pass 流程：
+
+```
+OHLCV Input ──▸ Linear Projection ──▸ + Sinusoidal PE ──▸ Encoder ×2 ──▸ Last-Token Pool ──▸ Task Head
+  30 × 5            5 → 64              30 × 64           4H · GELU        30 → 1           → 65 / → 1
+```
+
+**功能亮点：**
+
+| 功能 | 描述 |
+|------|------|
+| 动画数据流 | 金色光点沿 pipeline 流动，模拟 token 的前向传播过程 |
+| 点击探索 | 点击任一组件，展开详细的内部结构、公式和参数说明 |
+| 注意力扇形图 | Encoder 详情中绘制 SVG 弧线，展示 last-token 如何注意前序所有位置 |
+| Pretrain ↔ Finetune 切换 | 切换任务头（Stock ID 65 分类 → Trend ↑↓ 二分类），冻结 encoder 时显示霜冻纹理 |
+| 滚动 Ticker 带 | 65 只美股按 GICS 行业着色（Tech=蓝、Finance=金、Healthcare=绿…） |
+| 真实参数 | 所有维度、特征名、参数量均来自 `model.py` 和 `config.py` |
 
 ## 怎么读指标
 
