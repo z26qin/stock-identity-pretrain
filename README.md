@@ -1,4 +1,4 @@
-# stockDNA-pretrain
+# stock-identity-pretrain
 
 A Transformer-based Pre-train & Fine-tune framework that turns volatility noise into tradable signals.
 
@@ -24,8 +24,8 @@ A Transformer-based Pre-train & Fine-tune framework that turns volatility noise 
 ## 快速开始
 
 ```bash
-git clone https://github.com/z26qin/stockDNA-pretrain.git
-cd stockDNA-pretrain
+git clone https://github.com/z26qin/stock-identity-pretrain.git
+cd stock-identity-pretrain
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
